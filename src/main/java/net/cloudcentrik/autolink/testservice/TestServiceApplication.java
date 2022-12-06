@@ -1,22 +1,21 @@
 package net.cloudcentrik.autolink.testservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.discovery.EurekaClient;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import net.cloudcentrik.autolink.testservice.model.Greeting;
 import net.cloudcentrik.autolink.testservice.model.WikiPageViews;
-import net.cloudcentrik.autolink.testservice.task.TestTask;
 import net.cloudcentrik.autolink.testservice.utils.WikiHttpClient;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -33,7 +32,9 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 @Log4j2
 @SpringBootApplication
 @EnableAsync
+//@EnableBatchProcessing
 //@EnableDiscoveryClient
+@ComponentScan("net.cloudcentrik.autolink.testservice")
 public class TestServiceApplication {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	@Autowired
@@ -79,7 +80,7 @@ public class TestServiceApplication {
 	@Async
 	public void startProcessing() {
 		//TestTask.startTestTask();
-		wikiHttpClient.getPageViews("sweden","20220101","20221201")
+		wikiHttpClient.getPageViews("sweden","20221101","20221201")
 				.thenAccept(response ->response.stream()
 						.forEach(wikiPageViews ->logViews(wikiPageViews)));
 	}
